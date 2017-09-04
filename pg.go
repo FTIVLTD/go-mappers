@@ -26,18 +26,6 @@ ERROR - logging type
 const ERROR = "error"
 
 /*
-DBConfig - Postgres config
-*/
-type DBConfig struct {
-	User,
-	Password,
-	Host,
-	Port,
-	Database,
-	SSLmode string
-}
-
-/*
 Mapper - Postgres Mapper to simplify interaction with DB
 */
 type Postgres struct {
