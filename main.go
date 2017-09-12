@@ -13,6 +13,16 @@ type DBConfig struct {
 }
 
 /*
+HTTPConfig - HTTP(s) config
+*/
+type HTTPConfig struct {
+	User,
+	Password,
+	Host string
+	Port int
+}
+
+/*
 NewPostgres - constructor for Postgres data mapper
 */
 func NewPostgres(config DBConfig, source string) Postgres {
@@ -37,10 +47,9 @@ func NewRedis(h string, p int, u, pass string) Redis {
 /*
 NewHTTP - constructor for HTTP(S) data mapper
 */
-func NewHTTP(host string, port int, path string) HTTP {
+func NewHTTP(conf HTTPConfig) HTTP {
 	return HTTP{
-		Host: host,
-		Port: port,
-		Path: path,
+		Host: conf.Host,
+		Port: conf.Port,
 	}
 }
