@@ -31,7 +31,7 @@ Load — loading data: GET request
 */
 func (h *HTTP) Load(params interface{}) (interface{}, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", h.prepareUrl(params), nil)
+	req, err := http.NewRequest("GET", h.prepareURL(params), nil)
 	for key, v := range h.headers {
 		req.Header.Add(key, v)
 	}
@@ -43,7 +43,24 @@ func (h *HTTP) Load(params interface{}) (interface{}, error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func (h *HTTP) prepareUrl(params interface{}) string {
+/*
+Update — loading data: PUT request
+*/
+func (h *HTTP) Update(params, payload interface{}) (interface{}, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("PUT", h.prepareURL(params), nil)
+	for key, v := range h.headers {
+		req.Header.Add(key, v)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
+}
+
+func (h *HTTP) prepareURL(params interface{}) string {
 	var query string
 	if params != nil {
 		query = prepareQuery(params)
