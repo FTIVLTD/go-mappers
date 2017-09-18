@@ -2,7 +2,6 @@ package mappers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -70,7 +69,6 @@ func (h *HTTP) prepareURL(params interface{}) string {
 		protocol = "https://"
 	}
 	url := protocol + h.Host + ":" + strconv.FormatInt(int64(h.Port), 10) + h.Path + "?" + query
-	fmt.Println("Query: ", url)
 	return url
 
 }
