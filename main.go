@@ -25,10 +25,9 @@ type HTTPConfig struct {
 /*
 NewPostgres - constructor for Postgres data mapper
 */
-func NewPostgres(config DBConfig, source string) Postgres {
+func NewPostgres(config DBConfig) Postgres {
 	return Postgres{
 		DBConfig: config,
-		Source:   source,
 	}
 }
 
