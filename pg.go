@@ -162,7 +162,7 @@ func (pgm *Postgres) generateOnConflictQuery(fields []string, keys map[string]in
 	return SQL
 }
 
-func (pgm *Postgres) InsertBatch(fields []string, rows []interface{}, onDuplicate interface{}) error {
+func (pgm *Postgres) InsertBatch(table string, fields []string, rows []interface{}, onDuplicate interface{}) error {
 	if len(rows) == 0 {
 		return nil
 	}
@@ -170,7 +170,7 @@ func (pgm *Postgres) InsertBatch(fields []string, rows []interface{}, onDuplicat
 		return err
 	}
 	var values = []interface{}{}
-	SQL := "insert into " + pgm.Source + " (" + strings.Join(fields, ",") + ") values "
+	SQL := "insert into " + table + " (" + strings.Join(fields, ",") + ") values "
 
 	var placeholder []string
 
@@ -192,7 +192,7 @@ func (pgm *Postgres) InsertBatch(fields []string, rows []interface{}, onDuplicat
 	}
 	stmt, err := pgm.Conn.Prepare(SQL)
 	if err != nil {
-		fmt.Println("stmt: ", SQL)
+		fmt.Println("[PG][ERROR] stmt: ", SQL)
 		return err
 	}
 	defer stmt.Close()
