@@ -26,7 +26,7 @@ ERROR - logging type
 const ERROR = "error"
 
 /*
-Mapper - Postgres Mapper to simplify interaction with DB
+Postgres - Postgres Mapper to simplify interaction with DB
 */
 type Postgres struct {
 	DBConfig          DBConfig
@@ -35,7 +35,8 @@ type Postgres struct {
 	Source            string
 	ConnectionInfo    string
 	ListenIdleTimeout time.Duration
-	Handler           func(string)
+	handler           func(string)
+	errorHandler      func(error)
 	Logger            func(...interface{}) error
 }
 
@@ -211,6 +212,9 @@ func (pgm *Postgres) Listen(channel string) error {
 	pgm.Log(LOG, "Listen "+pgm.DBConfig.Host+"/"+pgm.DBConfig.Database+" connecting")
 	reportProblem := func(ev pq.ListenerEventType, err error) {
 		if err != nil {
+			if pgm.errorHandler != nil {
+				pgm.errorHandler(err)
+			}
 			pgm.Log("Error", "pg_listener_create_error", err, nil)
 		}
 	}
@@ -235,7 +239,7 @@ func (mapper *Postgres) HandleListen() {
 				mapper.Log(ERROR, "Listener extra is nil: ", n.Extra)
 				return
 			}
-			mapper.Handler(n.Extra)
+			mapper.handler(n.Extra)
 			return
 		case <-time.After(mapper.ListenIdleTimeout):
 			timeout := mapper.ListenIdleTimeout.String()
@@ -248,8 +252,12 @@ func (mapper *Postgres) HandleListen() {
 	}
 }
 
-func (mapper *Postgres) SetHandler(handler func(string)) {
-	mapper.Handler = handler
+func (mapper *Postgres) OnData(handler func(string)) {
+	mapper.handler = handler
+}
+
+func (mapper *Postgres) OnError(handler func(error)) {
+	mapper.errorHandler = handler
 }
 
 func (m *Postgres) GetDBInfo() string {
