@@ -2,9 +2,9 @@ package mappers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -35,7 +35,7 @@ type Postgres struct {
 	Source            string
 	ConnectionInfo    string
 	ListenIdleTimeout time.Duration
-	Handler           func(interface{})
+	Handler           func(string)
 	Logger            func(...interface{}) error
 }
 
@@ -204,7 +204,7 @@ func (pgm *Postgres) InsertBatch(table string, fields []string, rows []interface
 	return nil
 }
 
-func (pgm *Postgres) Listen() error {
+func (pgm *Postgres) Listen(channel string) error {
 	if err := pgm.checkConnection(); err != nil {
 		return err
 	}
@@ -216,10 +216,11 @@ func (pgm *Postgres) Listen() error {
 	}
 
 	pgm.Listener = pq.NewListener(pgm.ConnectionInfo, 10*time.Second, time.Minute, reportProblem)
-	err := pgm.Listener.Listen("finery")
+	err := pgm.Listener.Listen(channel)
 	if err != nil {
 		panic(err)
 	}
+	log.Println("[LOG] Listen connected")
 	for {
 		pgm.HandleListen()
 	}
@@ -230,18 +231,11 @@ func (mapper *Postgres) HandleListen() {
 	for {
 		select {
 		case n := <-l.Notify:
-
-			var data interface{}
 			if n == nil {
 				mapper.Log(ERROR, "Listener extra is nil: ", n.Extra)
 				return
 			}
-			err := json.Unmarshal([]byte(n.Extra), &data)
-			if err != nil {
-				mapper.Log(ERROR, "Error processing JSON: ", err, nil)
-				return
-			}
-			mapper.Handler(data)
+			mapper.Handler(n.Extra)
 			return
 		case <-time.After(mapper.ListenIdleTimeout):
 			timeout := mapper.ListenIdleTimeout.String()
@@ -254,7 +248,7 @@ func (mapper *Postgres) HandleListen() {
 	}
 }
 
-func (mapper *Postgres) SetHandler(handler func(interface{})) {
+func (mapper *Postgres) SetHandler(handler func(string)) {
 	mapper.Handler = handler
 }
 
