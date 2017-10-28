@@ -32,14 +32,9 @@ func NewPostgres(config DBConfig) Postgres {
 }
 
 // NewRedis - redis constructor
-func NewRedis(h string, p int, u, pass string) Redis {
+func NewRedis(conf DBConfig) Redis {
 	return Redis{
-		DBConfig: DBConfig{
-			Host:     h,
-			Port:     p,
-			Password: pass,
-			User:     u,
-		},
+		DBConfig: conf,
 	}
 }
 

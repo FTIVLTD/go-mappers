@@ -26,6 +26,10 @@ func (r *Redis) Get(key string) (interface{}, error) {
 	return r.client.Get(key).Result()
 }
 
+func (r *Redis) Del(string) error {
+	return nil
+}
+
 /*
 Set - setting key with value and expiration time
 */
