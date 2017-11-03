@@ -51,10 +51,9 @@ func NewHTTP(conf HTTPConfig) HTTP {
 /*
 NewMongo - constructor for Mongodb data mapper
 */
-func NewMongo(config DBConfig, c string, limit int) Mongo {
+func NewMongo(config DBConfig, c string) Mongo {
 	return Mongo{
 		DBConfig:   config,
 		Collection: c,
-		Limit:      limit,
 	}
 }

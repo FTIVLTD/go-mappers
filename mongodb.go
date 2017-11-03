@@ -15,7 +15,7 @@ type Mongo struct {
 	DBConfig   DBConfig
 	Collection string
 	Conn       *mgo.Session
-	Limit      int
+	limit      int
 }
 
 /*
@@ -29,6 +29,11 @@ func (m *Mongo) Connect() error {
 		return err
 	}
 	return nil
+}
+
+func (m *Mongo) Limit(limit int) Mongo {
+	m.limit = limit
+	return m
 }
 
 /*
@@ -59,7 +64,7 @@ func (m *Mongo) Search(query bson.M) (interface{}, error) {
 	}
 	c := m.Conn.DB(m.DBConfig.Database).C(m.Collection)
 	var data []interface{}
-	err := c.Find(query).Limit(m.Limit).All(&data)
+	err := c.Find(query).Limit(m.limit).All(&data)
 	if err != nil {
 		return data, err
 	}
