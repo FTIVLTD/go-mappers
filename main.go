@@ -47,3 +47,14 @@ func NewHTTP(conf HTTPConfig) HTTP {
 		Port: conf.Port,
 	}
 }
+
+/*
+NewMongo - constructor for Mongodb data mapper
+*/
+func NewMongo(config DBConfig, c string, limit int) Mongo {
+	return Mongo{
+		DBConfig:   config,
+		Collection: c,
+		Limit:      limit,
+	}
+}
