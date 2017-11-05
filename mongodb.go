@@ -31,7 +31,10 @@ func (m *Mongo) Connect() error {
 	return nil
 }
 
-func (m *Mongo) Limit(limit int) Mongo {
+/*
+Limit - setting up limit
+*/
+func (m *Mongo) Limit(limit int) *Mongo {
 	m.limit = limit
 	return m
 }

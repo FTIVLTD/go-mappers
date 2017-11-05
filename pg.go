@@ -41,6 +41,13 @@ type Postgres struct {
 }
 
 /*
+Connect - connecting to DB
+*/
+func (pgm *Postgres) Connect() error {
+	return pgm.connect()
+}
+
+/*
 connect - connecting to DB
 */
 func (pgm *Postgres) connect() error {
