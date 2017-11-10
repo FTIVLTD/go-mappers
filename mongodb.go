@@ -16,6 +16,7 @@ type Mongo struct {
 	Collection string
 	Conn       *mgo.Session
 	limit      int
+	sort       string
 }
 
 /*
@@ -36,6 +37,14 @@ Limit - setting up limit
 */
 func (m *Mongo) Limit(limit int) *Mongo {
 	m.limit = limit
+	return m
+}
+
+/*
+Sort - setting up sort mode
+*/
+func (m *Mongo) Sort(sort string) *Mongo {
+	m.sort = sort
 	return m
 }
 
@@ -67,7 +76,7 @@ func (m *Mongo) Search(query bson.M) (interface{}, error) {
 	}
 	c := m.Conn.DB(m.DBConfig.Database).C(m.Collection)
 	var data []interface{}
-	err := c.Find(query).Limit(m.limit).All(&data)
+	err := c.Find(query).Limit(m.limit).Sort(m.sort).All(&data)
 	if err != nil {
 		return data, err
 	}
