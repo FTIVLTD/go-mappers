@@ -26,8 +26,15 @@ func (r *Redis) Get(key string) (interface{}, error) {
 	return r.client.Get(key).Result()
 }
 
-func (r *Redis) Del(string) error {
-	return nil
+/*
+Del - deleting data by key
+*/
+func (r *Redis) Del(key string) error {
+	err := r.checkConnection()
+	if err != nil {
+		return err
+	}
+	return r.client.Del(key).Err()
 }
 
 /*
