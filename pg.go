@@ -110,32 +110,43 @@ func (pgm *Postgres) Create(fields []string, values []interface{}) (sql.Result, 
 	return pgm.execute(SQL, values)
 }
 
-func (pgm *Postgres) execute(SQL string, values []interface{}) (sql.Result, error) {
-	if err := pgm.checkConnection(); err != nil {
-		return nil, err
+func (pgm *Postgres) execute(SQL string, values []interface{}) (res sql.Result, err error) {
+	if err = pgm.checkConnection(); err != nil {
+		return
 	}
 
 	stmt, err := pgm.Conn.Prepare(SQL)
 	if err != nil {
 		fmt.Println("Preparing statement error: ", err, SQL)
-		return nil, err
+		return
 	}
 	defer stmt.Close()
-	return stmt.Exec(values...)
+	res, err = stmt.Exec(values...)
+	if err != nil {
+		log.Println("Error in execute:", err)
+	}
+	return
 }
 
 /*
 Exec - executing prepared SQL string
 */
-func (pgm *Postgres) Exec(SQL string) (*sql.Rows, error) {
-	if err := pgm.checkConnection(); err != nil {
-		return nil, err
+func (pgm *Postgres) Exec(SQL string) (rows *sql.Rows, err error) {
+	if err = pgm.checkConnection(); err != nil {
+		return
 	}
-	return pgm.Conn.Query(SQL)
+	rows, err = pgm.Conn.Query(SQL)
+	if err != nil {
+		log.Println("Error in Exec:", err)
+	}
+	return
 }
 
 func (pgm *Postgres) checkConnection() error {
 	if pgm.Conn == nil {
+		return pgm.connect()
+	}
+	if pgm.Conn.Stats().OpenConnections == 0 {
 		return pgm.connect()
 	}
 	return nil
