@@ -18,11 +18,17 @@ type HTTP struct {
 	headers map[string]string
 }
 
+// AddHeader - adding custom header
 func (h *HTTP) AddHeader(key, value string) {
 	if h.headers == nil {
 		h.headers = make(map[string]string)
 	}
 	h.headers[key] = value
+}
+
+// SetPath - setting path to http resource
+func (h *HTTP) SetPath(p string) {
+	h.Path = p
 }
 
 /*
