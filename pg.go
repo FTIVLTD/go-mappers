@@ -210,11 +210,13 @@ func (pgm *Postgres) InsertBatch(table string, fields []string, rows []interface
 		SQL += " ON CONFLICT " + onDuplicate.(string)
 	}
 	stmt, err := pgm.Conn.Prepare(SQL)
+	if stmt != nil {
+		defer stmt.Close()
+	}
 	if err != nil {
 		fmt.Println("[PG][ERROR] stmt: ", SQL)
 		return err
 	}
-	defer stmt.Close()
 	_, execErr := stmt.Exec(values...)
 	if execErr != nil {
 		fmt.Println("Exec: ", execErr)
